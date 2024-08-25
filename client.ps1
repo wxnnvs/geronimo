@@ -17,7 +17,7 @@ $StartupFolder = [System.IO.Path]::Combine($env:APPDATA, 'Microsoft\Windows\Star
 $ScriptPath = $MyInvocation.MyCommand.Path
 
 # Define the path for the shortcut
-$ShortcutPath = [System.IO.Path]::Combine($StartupFolder, 'MyScript.lnk')
+$ShortcutPath = [System.IO.Path]::Combine($StartupFolder, 'MyScript.lnk') # Edit the filename to fit your needs
 
 # Check if the shortcut already exists
 if (Test-Path $ShortcutPath) {
