@@ -6,6 +6,7 @@ A very minimal Powershell-based reverse shell.
 - [x] Command-line access
 - [x] Upload/download files to/from client
 - [x] Autostart on boot
+- [x] Hidden from Taskmanager
 
 ## Usage
 1. Clone this project
