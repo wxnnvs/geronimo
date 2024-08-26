@@ -40,7 +40,7 @@ if ($args -contains '-HiddenWindow') {
     Main
 } else {
     Write-Output "Script is running in normal mode."
-    Start-Process powershell -WindowStyle Hidden -ArgumentList '-NoProfile -ExecutionPolicy Bypass -Command "& {`'$ScriptPath`' -HiddenWindow}"'
+    Start-Process powershell -WindowStyle Hidden -ArgumentList "-NoProfile -ExecutionPolicy Bypass -Command '& {`"$ScriptPath`" -HiddenWindow}'"
 }
 
 function Main {
