@@ -1,10 +1,11 @@
-# reverse-powershell
-
-A very minimal Powershell-based reverse shell.
+# Geronimo
+A Remote Administration Tool written in powershell.
 
 ## Features
-- [x] Command-line access
-- [x] Upload/download files to/from client
+- [x] CLI-access
+- [x] Elevated command execution
+- [x] Upload files to client
+- [x] Download files from client
 - [x] Autostart on boot
 - [x] Hidden from Taskmanager
 
