@@ -21,3 +21,5 @@ A Remote Administration Tool written in powershell.
 4. In **client.ps1**, specify the attacker's IP and port and the name of the shortcut.
 5. Run client.ps1 on the target machine
 6. **Profit!**
+
+*Geronimo is provided as an administration tool to be used inside your personal network. I (wxnnvs) cannot be held liable for any misuse of this tool. All responsibility is at the users end.*
