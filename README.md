@@ -1,6 +1,9 @@
 # Geronimo
 A Remote Administration Tool written in powershell.
 
+> [!WARNING]
+> Geronimo is in its early testing stages, some features may not work as intended.
+
 ## Features
 - [x] CLI-access
 - [x] Elevated command execution
