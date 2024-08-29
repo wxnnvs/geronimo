@@ -27,7 +27,7 @@ A Remote Administration Tool written in powershell.
 - clear      -->  clear your screen
 - exit [-s]  -->  shutdown the client [and the server]
 ```
-> [!INFO]
+> [!NOTE]
 > All other commands will be executed as a Powershell command.
 
 *Geronimo is provided as an administration tool to be used inside your personal network. I (wxnnvs) cannot be held liable for any misuse of this tool. All responsibility is at the users end.*
