@@ -9,10 +9,10 @@ A Remote Administration Tool written in powershell.
 
 ## Features
 - [x] CLI-access
-- [x] Autostart on boot
 - [ ] Elevated command execution
 - [ ] Upload files to client
 - [ ] Download files from client
+- [ ] Autostart on boot
 - [ ] Hidden from Taskmanager
 
 ## Installation
