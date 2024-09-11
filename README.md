@@ -1,3 +1,6 @@
+### [Deprecated]
+This project has been archived, use [Geronimo 2](https://github.com/wxnnvs/geronimo2/) instead
+
 # Geronimo
 A Remote Administration Tool written in powershell.
 
